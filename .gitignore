@@ -52,3 +52,20 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Rider (JetBrains .NET IDE)
+.idea/
+*.sln.iml
+*.csproj.iws
+*.userprefs
+*.DotSettings
+*.DotSettings.user
+_ReSharper.*
+*.rider/
+
+# Кэш Rider
+/.idea/.idea.*/.idea/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/vcs.xml
+/.idea/shelf/
