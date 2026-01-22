@@ -1,4 +1,6 @@
+using Back_Quiz.Exceptions;
 using Backend.Data;
+using Backend.Exceptions;
 using Backend.FluentValidation;
 using Backend.Interfaces;
 using Backend.Mapper;
@@ -7,6 +9,7 @@ using Backend.Services;
 using FluentValidation;
 using Hellang.Middleware.ProblemDetails;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -18,6 +21,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails(options =>
 {
     options.IncludeExceptionDetails = (_, _) => false;
+    options.Map<CustomExceptions>(ex => new ProblemDetails
+    {
+        Type = ex.Type,
+        Title = ex.Title,
+        Status = (int)ex.StatusCode,
+        Detail = ex.Message
+    });
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -56,6 +66,7 @@ app.UseAuthorization();
 
 app.UseProblemDetails();
 app.UseMiddleware<ValidationExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

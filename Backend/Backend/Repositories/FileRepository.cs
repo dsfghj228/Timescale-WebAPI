@@ -1,3 +1,4 @@
+using Back_Quiz.Exceptions;
 using Backend.Data;
 using Backend.Dto;
 using Backend.Interfaces;
@@ -113,7 +114,7 @@ public class FileRepository : IFileRepository
             .AnyAsync(f => f.FileName == fileName);
 
         if (!fileExists)
-            throw new Exception($"File '{fileName}' not found");
+            throw new CustomExceptions.FileNotFoundException(fileName);
         
         var values = await _context.Values
             .Where(v => v.FileImport.FileName == fileName)

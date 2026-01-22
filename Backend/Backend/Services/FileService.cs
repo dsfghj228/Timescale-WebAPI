@@ -1,4 +1,5 @@
 using System.Globalization;
+using Back_Quiz.Exceptions;
 using Backend.Interfaces;
 using Backend.Models;
 
@@ -9,7 +10,7 @@ public class FileService : IFileService
     public List<ValueEntry> ValidateFile(List<string> lines, Guid fileId)
     {
         if(lines.Count < 2 || lines.Count > 10001)
-            throw new Exception("Файл должен содержать от 1 до 10000 записей.");
+            throw new CustomExceptions.InvalidFileRowCountException(lines.Count);
         
         var dataLines = lines.Skip(1).ToList();
         var values = new List<ValueEntry>();
@@ -18,19 +19,19 @@ public class FileService : IFileService
         {
             var parts = line.Split(';');
             if (parts.Length != 3)
-                throw new Exception($"Неправильный формат строки: {line}");
+                throw new CustomExceptions.InvalidFileFormatException(line);
 
             if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var date))
-                throw new Exception($"Неправильная дата: {parts[0]}");
+                throw new CustomExceptions.InvalidDateException(parts[0]);
 
             if (!double.TryParse(parts[1],NumberStyles.Float, CultureInfo.InvariantCulture, out var executionTime) || executionTime < 0)
-                throw new Exception($"Неверное ExecutionTime: {parts[1]}");
+                throw new CustomExceptions.InvalidExecutionTimeException(parts[1]);
 
             if (!double.TryParse(parts[2],NumberStyles.Float, CultureInfo.InvariantCulture, out var valueNumber) || valueNumber < 0)
-                throw new Exception($"Неверное Value: {parts[2]}");
+                throw new CustomExceptions.InvalidValueException(parts[2]);
 
             if (date < new DateTime(2000, 1, 1) || date > DateTime.UtcNow)
-                throw new Exception($"Дата вне допустимого диапазона: {parts[0]}");
+                throw new CustomExceptions.InvalidDateException(parts[0]);
 
             values.Add(new ValueEntry
             {
