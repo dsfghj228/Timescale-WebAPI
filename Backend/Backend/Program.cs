@@ -5,6 +5,7 @@ using Backend.Mapper;
 using Backend.Repositories;
 using Backend.Services;
 using FluentValidation;
+using Hellang.Middleware.ProblemDetails;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -13,6 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddProblemDetails(options =>
+{
+    options.IncludeExceptionDetails = (_, _) => false;
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -47,6 +53,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseProblemDetails();
+app.UseMiddleware<ValidationExceptionMiddleware>();
 
 app.MapControllers();
 
