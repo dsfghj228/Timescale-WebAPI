@@ -54,11 +54,14 @@ builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("v1/swagger.json", "Backend V1"));
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI(options => options.SwaggerEndpoint("v1/swagger.json", "Backend V1"));
 
 app.UseHttpsRedirection();
 
