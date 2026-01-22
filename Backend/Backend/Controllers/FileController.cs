@@ -1,5 +1,6 @@
 using Backend.Dto;
 using Backend.MediatR.Commands;
+using Backend.MediatR.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,18 @@ public class FileController : ControllerBase
         };
         
         var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("{fileName}/values/latest")]
+    public async Task<IActionResult> GetLatest([FromRoute] string fileName)
+    {
+        var query = new GetLastTenFileValuesQuery
+        {
+            FileName = fileName
+        };
+        
+        var result = await _mediator.Send(query);
         return Ok(result);
     }
 }

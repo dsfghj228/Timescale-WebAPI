@@ -104,4 +104,23 @@ public class FileRepository : IFileRepository
             throw;
         }
     }
+
+    public async Task<List<ValueEntry>> GetLastTenFileValuesAsync(string fileName)
+    {
+        var fileExists = await _context.Files
+            .AsNoTracking()
+            .AnyAsync(f => f.FileName == fileName);
+
+        if (!fileExists)
+            throw new Exception($"File '{fileName}' not found");
+        
+        var values = await _context.Values
+            .Where(v => v.FileImport.FileName == fileName)
+            .AsNoTracking()
+            .OrderByDescending(v => v.Timestamp)
+            .Take(10)
+            .ToListAsync();
+        
+        return values;
+    }
 }

@@ -32,7 +32,7 @@ public class ApplicationDbContext : DbContext
             .HasIndex(f => f.FileName).IsUnique();
         
         modelBuilder.Entity<ValueEntry>()
-            .HasIndex(v => new { v.FileImportId, v.ExecutionTime });
+            .HasIndex(v => new { v.FileImportId, v.Timestamp });
         
         modelBuilder.Entity<ResultAggregate>()
             .HasIndex(r => r.FirstOperationDate);
