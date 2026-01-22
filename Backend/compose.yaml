@@ -4,4 +4,37 @@
     build:
       context: .
       dockerfile: Backend/Dockerfile
+    ports:
+        - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__PostgreSQL=Host=db;Port=5432;Database=Timescale;Username=postgres;Password=1234567890
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend-network
+  
+  db:
+    image: postgres:15
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234567890
+      POSTGRES_DB: Timescale
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+volumes:
+  postgres_data:
+
+networks:
+  backend-network:
