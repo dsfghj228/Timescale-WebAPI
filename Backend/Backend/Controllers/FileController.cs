@@ -42,4 +42,16 @@ public class FileController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
+    
+    [HttpGet("results")]
+    public async Task<IActionResult> GetResultsByFilter([FromQuery] ResultFilterDto filter)
+    {
+        var query = new GetResultsByFilterQuery
+        {
+            Filter = filter
+        };
+        
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
 }

@@ -1,4 +1,5 @@
 using Backend.Data;
+using Backend.Dto;
 using Backend.Interfaces;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
@@ -122,5 +123,56 @@ public class FileRepository : IFileRepository
             .ToListAsync();
         
         return values;
+    }
+
+    public async Task<List<ResultAggregate>> GetResultsByFilterAsync(ResultFilterDto filter)
+    {
+        IQueryable<ResultAggregate> query = _context.Results
+            .Include(r => r.FileImport);
+
+        if (!string.IsNullOrEmpty(filter.FileName))
+        {
+            query = query.Where(q => q.FileImport.FileName == filter.FileName);
+        }
+        
+        if (filter.StartDateFrom.HasValue)
+        {
+            query = query.Where(r =>
+                r.FirstOperationDate >= filter.StartDateFrom.Value);
+        }
+
+        if (filter.StartDateTo.HasValue)
+        {
+            query = query.Where(r =>
+                r.FirstOperationDate <= filter.StartDateTo.Value);
+        }
+
+        if (filter.AvgValueFrom.HasValue)
+        {
+            query = query.Where(r =>
+                r.AverageValue >= filter.AvgValueFrom.Value);
+        }
+
+        if (filter.AvgValueTo.HasValue)
+        {
+            query = query.Where(r =>
+                r.AverageValue <= filter.AvgValueTo.Value);
+        }
+
+        if (filter.AvgExecutionTimeFrom.HasValue)
+        {
+            query = query.Where(r =>
+                r.AverageExecutionTime >= filter.AvgExecutionTimeFrom.Value);
+        }
+
+        if (filter.AvgExecutionTimeTo.HasValue)
+        {
+            query = query.Where(r =>
+                r.AverageExecutionTime <= filter.AvgExecutionTimeTo.Value);
+        }
+
+        return await query
+            .OrderByDescending(r => r.FirstOperationDate)
+            .ToListAsync();
     }
 }
