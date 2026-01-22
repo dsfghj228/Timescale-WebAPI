@@ -1,3 +1,4 @@
+using System.Reflection;
 using Back_Quiz.Exceptions;
 using Backend.Data;
 using Backend.Exceptions;
@@ -33,6 +34,9 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

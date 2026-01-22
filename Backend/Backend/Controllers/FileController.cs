@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
+/// <summary>
+/// Контроллер для управления файлами и их данными.
+/// </summary>
 [ApiController]
 [Route("api/files")]
 public class FileController : ControllerBase
@@ -17,6 +20,19 @@ public class FileController : ControllerBase
         _mediator = mediator;
     }
     
+    /// <summary>
+    /// Загрузка нового файла
+    /// </summary>
+    /// <param name="request">Файл</param>
+    /// <response code="200">Файл успешно загружен</response>
+    /// <response code="400">
+    /// Возможные ошибки:
+    /// - Invalid File Format
+    /// - Invalid Date
+    /// - Invalid ExecutionTime
+    /// - Invalid Value
+    /// - Invalid Row Count
+    /// </response>
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Upload([FromForm] FileUploadRequest request)
@@ -30,7 +46,13 @@ public class FileController : ControllerBase
         var result = await _mediator.Send(command);
         return Ok(result);
     }
-
+    
+    /// <summary>
+    /// Получение последних 10 значений файла
+    /// </summary>
+    /// <param name="fileName">Имя файла</param>
+    /// <response code="200">Успешное получение значений файла</response>
+    /// <response code="404">Файл не найден</response>
     [HttpGet("{fileName}/values/latest")]
     public async Task<IActionResult> GetLatest([FromRoute] string fileName)
     {
@@ -43,6 +65,11 @@ public class FileController : ControllerBase
         return Ok(result);
     }
     
+    /// <summary>
+    /// Получение результатов по фильтру
+    /// </summary>
+    /// <param name="filter">Фильтры поиска</param>
+    /// <response code="200">Успешное получение результатов</response>
     [HttpGet("results")]
     public async Task<IActionResult> GetResultsByFilter([FromQuery] ResultFilterDto filter)
     {
