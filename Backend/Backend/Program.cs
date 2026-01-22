@@ -1,5 +1,9 @@
 using Backend.Data;
 using Backend.FluentValidation;
+using Backend.Interfaces;
+using Backend.Mapper;
+using Backend.Repositories;
+using Backend.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +30,11 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<Program>();
     cfg.AddBehavior(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
 });
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 
